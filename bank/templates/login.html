@@ -5,19 +5,25 @@
 {% endblock %}
 
 {% block content %}
+
+
+{% for message in get_flashed_messages() %}
+    <p>{{ message }}</p>
+{% endfor %}
+
     <form action="" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <fieldset>
             <legend>Login</legend>
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username" required>
+            <label for="uname">Username</label>
+            <input type="text" name="uname" id="uname" required>
             <br><br>
             <label for="password">Password</label>
             <input type="password" name="password" id="password" required>
             <br><br>
-            <label for="who">Login as</label>
-            <input type="radio" name="who" value="customer">Customer
-            <input type="radio" name="who" value="teller">Teller
+            <label for="is_cust">Login as</label>
+            <input type="radio" name="is_cust" value="1">Customer
+            <input type="radio" name="is_cust" value="0">Teller
             <br><br>
             <button type="submit">Login</button>
         </fieldset>
