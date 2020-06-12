@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% include 'includes/nav.html' %}
+{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <fieldset>
+            <legend>Register</legend>
+            <label for="ssnid">SSN ID</label>
+            <input type="text" name="ssnid" id="ssnid" required pattern="\d{9}">
+            <br><br>
+            <label for="custname">Customer Name</label>
+            <input type="text" name="custname" id="custname" required>
+            <br><br>
+            <label for="age">Age</label>
+            <input type="number" name="age" id="age" required min="18" max="100">
+            <br><br>
+            <label for="addr1">Address Line 2</label>
+            <textarea name="addr1" id="addr1" rows="4"></textarea>
+            <br><br>
+            <label for="addr2">Address Line 1</label>
+            <textarea name="addr2" id="addr2" rows="4"></textarea>
+            <br><br>
+            <label for="city">City</label>
+            <input type="text" name="city" id="city" required>
+            <br><br>
+            <label for="state">State</label>
+            <input type="text" name="state" id="state" required>
+            <br><br>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+            <br><br>
+            <button type="submit">Login</button>
+        </fieldset>
+    </form>
+    <br>
+    <p>Already have an account? Login <a href="{{ url_for('login') }}">Here</a></p>
+
+{% endblock %}
