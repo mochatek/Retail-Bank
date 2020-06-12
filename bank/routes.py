@@ -2,7 +2,7 @@ from bank import app
 from flask import render_template, request, redirect, url_for, flash
 from bank.models import User, db
 from datetime import datetime
-from sqlalchemy import and_
+from bank.forms import RegisterForm
 
 @app.route('/')
 def index():
@@ -26,19 +26,18 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'GET':
-        return render_template('register.html', page='Register')
-    else:
-        ssnid = request.form.get('ssnid')
-        uname = request.form.get('uname')
-        age = request.form.get('age')
-        addr1 = request.form.get('addr1')
-        addr2 = request.form.get('addr2')
-        city = request.form.get('city')
-        state = request.form.get('state')
+    form = RegisterForm()
+    if form.validate_on_submit():
+        ssnid = form.ssnid.data
+        uname = form.uname.data
+        age = form.age.data
+        addr1 = form.addr1.data
+        addr2 = form.addr2.data
+        city = form.city.data
+        state = form.state.data
         is_cust = 1                         #Used to distinguish between tellet & customer.
         created = datetime.now()            #Timestamp of creation.
-        password = request.form.get('password')
+        password = form.password.data
         user = User(ssnid=ssnid, uname=uname, age=age, addr1=addr1,
                     addr2=addr2, city=city, state=state, is_cust=is_cust, created=created)
         user.set_password(password)
@@ -46,3 +45,5 @@ def register():
         db.session.commit()
         flash('Registration successfull ! Login to continue.')
         return redirect(url_for('login'))
+    else:
+        return render_template('register.html', page='Register', form=form)
