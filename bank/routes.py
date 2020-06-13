@@ -3,6 +3,7 @@ from flask import render_template, request, redirect, url_for, flash
 from bank.models import Customer, Login, Account, Transaction, db
 from datetime import datetime
 from bank.forms import RegisterForm
+from sqlalchemy import or_
 
 @app.route('/')
 def index():
@@ -54,14 +55,52 @@ def create_customer():
         db.session.add(customer)
         # db.session.add(user)
         db.session.commit()
-        flash('Customer Registration successfull !.')
+        flash('Customer creation initiated successfull !.')
         return redirect(url_for('customer_home'))
     else:
         return render_template('create_customer.html', page='create_customer', form=form)
 
-@app.route('/customer/update')
+@app.route('/customer/update', methods=['GET', 'POST'])
 def update_customer():
-    return render_template('update_customer.html', page='update_customer')
+    customer = None
+    errors = None
+    if request.method == 'POST':
+        cust_name = request.form.get('cust_name', -1)
+        if cust_name == -1:  #Checking which form was submitted
+            cust_id = request.form.get('cust_id')
+            cust_ssn = request.form.get('cust_ssn')
+            if cust_ssn.strip() == '' and cust_id.strip() == '':
+                flash("Either one is mandatory and must be a 9-digit number")
+            else:
+                customer = db.session.query(Customer).filter(or_(Customer.cust_ssn == cust_ssn, Customer.cust_id == cust_id)).first()
+                if customer:
+                    flash("Customer Found !")
+                else:
+                    flash("No customer found with the given ID")
+        else:
+            errors = {}
+            cust_ssn = request.form.get('cust_ssn')
+            cust_id = request.form.get('cust_id')
+            cust_name = request.form.get('cust_name')
+            cust_age = request.form.get('cust_age')
+            cust_addr1 = request.form.get('cust_addr1')
+            customer = db.session.query(Customer).filter(or_(Customer.cust_ssn == cust_ssn, Customer.cust_id == cust_id)).first()
+            if cust_name.strip() == '':
+                errors['cust_name'] = 'Invalid name'
+            if cust_addr1.strip() == '':
+                errors['cust_addr1'] = 'Invalid address'
+            if cust_age.strip() == '' or not cust_age.isnumeric():
+                errors['cust_age'] = 'Invalid age'
+            if not errors:
+                customer.cust_name = cust_name
+                customer.cust_age = cust_age
+                customer.cust_addr1 = cust_addr1
+                db.session.commit()
+                flash('Customer update initiated successfully')
+            else:
+                flash('You need to fix the errors in order to update')
+
+    return render_template('update_customer.html', page='update_customer', customer=customer, errors=errors)
 
 @app.route('/customer/delete')
 def delete_customer():

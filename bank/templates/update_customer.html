@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% include 'includes/customer_nav.html' %}
+{% endblock %}
+
+{% block content %}
+    <h4 class="text-center" style="font:bold 22px Impact">Update Customer</h4>
+    <hr>
+    {% for message in get_flashed_messages() %}
+        <p class="alert alert-info">{{ message }}</p>
+    {% endfor %}
+    <div class="col-sm-offset-2 col-sm-10">
+    <form class="form-inline" action="" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <input type="text" name="cust_ssn" id="cust_ssn" class="form-control" placeholder="Customer SSN">
+        </div>
+        <div class="form-group">
+            <p class="form-control-static" style="color:red"><b>OR</b></p>
+        </div>
+        <div class="form-group">
+            <input type="text" name="cust_id" id="cust_id" class="form-control" placeholder="Customer ID">
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-info">Search</button>
+        </div>
+    </form>
+    <br>
+    <br>
+</div>
+    {% if customer %}
+        <hr>
+        <form action="" method="post" class="form-horizontal">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="cust_ssn">Customer SSN</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="cust_ssn" name="cust_ssn" value="{{ customer.cust_ssn }}" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="cust_id">Customer ID</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="cust_id" name="cust_id" value="{{ customer.cust_id }}" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="cust_name">Name</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="cust_name" name="cust_name" value="{{ customer.cust_name }}">
+                    <span class="alert-danger">
+                        {% if errors['cust_name'] %}
+                        <p>{{ errors['cust_name'] }}</p>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="age">Age</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="cust_age" name="cust_age" value="{{ customer.cust_age }}">
+                    <span class="alert-danger">
+                        {% if errors['cust_age'] %}
+                        <p>{{ errors['cust_age'] }}</p>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="cust_addr1">Address</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" id="cust_addr1" name="cust_addr1">{{ customer.cust_addr1 }}</textarea>
+                    <span class="alert-danger">
+                        {% if errors['cust_addr1'] %}
+                        <p>{{ errors['cust_addr1'] }}</p>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-success">Update</button>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+<br>
+<br>
+{% endblock %}

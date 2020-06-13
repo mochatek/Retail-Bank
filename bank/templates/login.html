@@ -7,9 +7,9 @@
 {% block content %}
     <h4 class="text-center" style="font:bold 22px Impact">Login</h4>
     <hr>
-{% for message in get_flashed_messages() %}
-    <p class="alert alert-info">{{ message }}</p>
-{% endfor %}
+    {% for message in get_flashed_messages() %}
+        <p class="alert alert-info">{{ message }}</p>
+    {% endfor %}
     <form class="form-horizontal" action="" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-group">
