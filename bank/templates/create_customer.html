@@ -7,7 +7,7 @@
 {% block content %}
     <h4 class="text-center" style="font:bold 22px Impact">Create Customer</h4>
     <hr>
-    <form class="form-horizontal" action="" method="POST">
+    <form class="form-horizontal" action="" method="POST" novalidate>
         {{ form.csrf_token }}
         {% for field in form if field.name not in ['csrf_token', 'submit'] %}
             <div class="form-group">

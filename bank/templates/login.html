@@ -10,7 +10,7 @@
     {% for message in get_flashed_messages() %}
         <p class="alert alert-info">{{ message }}</p>
     {% endfor %}
-    <form class="form-horizontal" action="" method="POST">
+    <form class="form-horizontal" action="" method="POST" novalidate>
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-group">
         <label class="control-label col-sm-2" for="uname">Username</label>
@@ -37,6 +37,7 @@
         <div class="col-sm-offset-2 col-sm-10">
             <button type="submit" class="btn btn-primary">Submit</button>
             <button type="reset" class="btn btn-warning" style="margin-left: 5%">Reset</button>
+            <span class="form-control-static" style="margin-left:3%">Don't have an account? Register <a href="{{ url_for('register') }}"><b>Here</b></a></span>
             </div>
         </div>
     </form>

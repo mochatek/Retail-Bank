@@ -2,16 +2,16 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, TextAreaField
 from wtforms.validators import DataRequired, Length
 from wtforms import ValidationError
-# from bank.models import Login, db
+from bank.models import Login, db
 
 def only_number(form, field):
         if not field.data.isnumeric():
             raise ValidationError('Only numbers are Allowed.')
 
-# def must_be_unique(form, field):
-#         user = db.session.query(Login).filter(Login.uname==field.data).first()
-#         if user:
-#             raise ValidationError('Sorry! This username is already taken.')
+def must_be_unique(form, field):
+        user = db.session.query(Login).filter(Login.uname==field.data).first()
+        if user:
+            raise ValidationError('Sorry! This username is already taken.')
 
 class RegisterForm(FlaskForm):
     cust_ssn = StringField('Customer SSN', validators=[DataRequired(message='Mandatory'), Length(min=9, max=9, message='Enter a valid 9-digit SSN ID'), only_number])
@@ -24,3 +24,8 @@ class RegisterForm(FlaskForm):
     # uname = StringField('Username', validators=[DataRequired(message='Mandatory'), must_be_unique])
     # password = PasswordField('Password', validators=[DataRequired(message='Mandatory'), Length(min=6, message='Minimum 6 characters needed')])
     submit = SubmitField('Register')
+
+
+class LoginForm(FlaskForm):
+    uname = StringField('Username', validators=[DataRequired(message='Mandatory'), Length(min=6, message='Minimum 6 characters needed'), must_be_unique])
+    password = PasswordField('Password', validators=[DataRequired(message='Mandatory'), Length(min=6, message='Minimum 6 characters needed')])

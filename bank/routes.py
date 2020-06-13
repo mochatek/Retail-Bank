@@ -2,29 +2,49 @@ from bank import app
 from flask import render_template, request, redirect, url_for, flash
 from bank.models import Customer, Login, Account, Transaction, db
 from datetime import datetime
-from bank.forms import RegisterForm
+from bank.forms import RegisterForm, LoginForm
 from sqlalchemy import or_
 
 @app.route('/')
 def index():
-    return render_template('index.html', page='Index')
+    return render_template('index.html', page='index')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html', page='Login')
+        return render_template('login.html', page='login')
     else:
         uname = request.form.get('uname')
         password = request.form.get('password')
         role = request.form.get('role')
         user = db.session.query(Login).filter(Login.uname==uname, Login.role==role).first()
-        # if user and user.check_password(password):
-        if user:
+        if user and user.check_password(password):
+            user.last_login = datetime.now()
+            db.session.commit()
             flash('Successfully Logged in.')
             return redirect(url_for('customer_home'))
         else:
             flash('Username-Password mismatch !!')
         return redirect(url_for('login'))
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = LoginForm()
+    if form.validate_on_submit():
+        uname = form.uname.data
+        password = form.password.data
+        role = request.form.get('role')
+        last_login = datetime.now()
+        user = Login(uname=uname, password=password, role=role, last_login=last_login)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        flash('Registration successfull! Login to continue.')
+        return redirect(url_for('login'))
+    else:
+        return render_template('register.html', page='register', form=form)
 
 
 @app.route('/customer')
@@ -42,33 +62,49 @@ def create_customer():
         cust_addr2 = form.cust_addr2.data
         cust_city = form.cust_city.data
         cust_state = form.cust_state.data
-        # is_cust = 1                                  Used to distinguish between tellet & customer.
-        cust_last_update = datetime.now()            #Timestamp of creation.
-        # uname = form.uname.data
-        # password = form.password.data
+        cust_last_update = datetime.now()           #Timestamp of creation.
+        cust_status = 'Created'
         customer = Customer(cust_ssn=cust_ssn, cust_name=cust_name, cust_age=cust_age, cust_addr1=cust_addr1,
-                    cust_addr2=cust_addr2, cust_city=cust_city, cust_state=cust_state, cust_last_update=cust_last_update)
-
-        # user = Login(cust_id=customer.cust_id, uname=uname, is_cust=is_cust)
-        # user.set_password(password)
-
+                    cust_addr2=cust_addr2, cust_city=cust_city, cust_state=cust_state, cust_last_update=cust_last_update, cust_status=cust_status)
         db.session.add(customer)
-        # db.session.add(user)
         db.session.commit()
         flash('Customer creation initiated successfull !.')
         return redirect(url_for('customer_home'))
     else:
         return render_template('create_customer.html', page='create_customer', form=form)
 
+
 @app.route('/customer/update', methods=['GET', 'POST'])
 def update_customer():
     customer = None
     errors = None
     if request.method == 'POST':
-        cust_name = request.form.get('cust_name', -1)
-        if cust_name == -1:  #Checking which form was submitted
-            cust_id = request.form.get('cust_id')
-            cust_ssn = request.form.get('cust_ssn')
+        errors = {}
+        cust_id = request.form.get('cust_id')
+        cust_name = request.form.get('cust_name')
+        cust_age = request.form.get('cust_age')
+        cust_addr1 = request.form.get('cust_addr1')
+        customer = db.session.query(Customer).filter(Customer.cust_id == cust_id).first()
+        if cust_name.strip() == '':
+            errors['cust_name'] = 'Invalid name'
+        if cust_addr1.strip() == '':
+            errors['cust_addr1'] = 'Invalid address'
+        if cust_age.strip() == '' or not cust_age.isnumeric():
+            errors['cust_age'] = 'Invalid age'
+        if not errors:
+            customer.cust_name = cust_name
+            customer.cust_age = cust_age
+            customer.cust_addr1 = cust_addr1
+            customer.cust_status = 'Updated'
+            customer.cust_last_update = datetime.now()
+            db.session.commit()
+            flash('Customer update initiated successfully')
+        else:
+            flash('You need to fix the errors in order to update')
+    else:
+        cust_id = request.args.get('cust_id', -1)
+        if cust_id != -1:
+            cust_ssn = request.args.get('cust_ssn')
             if cust_ssn.strip() == '' and cust_id.strip() == '':
                 flash("Either one is mandatory and must be a 9-digit number")
             else:
@@ -77,34 +113,38 @@ def update_customer():
                     flash("Customer Found !")
                 else:
                     flash("No customer found with the given ID")
-        else:
-            errors = {}
-            cust_ssn = request.form.get('cust_ssn')
-            cust_id = request.form.get('cust_id')
-            cust_name = request.form.get('cust_name')
-            cust_age = request.form.get('cust_age')
-            cust_addr1 = request.form.get('cust_addr1')
-            customer = db.session.query(Customer).filter(or_(Customer.cust_ssn == cust_ssn, Customer.cust_id == cust_id)).first()
-            if cust_name.strip() == '':
-                errors['cust_name'] = 'Invalid name'
-            if cust_addr1.strip() == '':
-                errors['cust_addr1'] = 'Invalid address'
-            if cust_age.strip() == '' or not cust_age.isnumeric():
-                errors['cust_age'] = 'Invalid age'
-            if not errors:
-                customer.cust_name = cust_name
-                customer.cust_age = cust_age
-                customer.cust_addr1 = cust_addr1
-                db.session.commit()
-                flash('Customer update initiated successfully')
-            else:
-                flash('You need to fix the errors in order to update')
-
     return render_template('update_customer.html', page='update_customer', customer=customer, errors=errors)
 
-@app.route('/customer/delete')
+
+@app.route('/customer/delete', methods=['GET', 'POST'])
 def delete_customer():
-    return render_template('delete_customer.html', page='delete_customer')
+    customer = None
+    if request.method == 'POST':
+        cust_id = request.form.get('cust_id')
+        customer = db.session.query(Customer).filter(Customer.cust_id == cust_id).first()
+        if customer.cust_status == 'Deleted':
+            customer.cust_status = 'Reactivated'
+            flash('Customer reactivate initiated successfully')
+        else:
+            customer.cust_status = 'Deleted'
+            flash('Customer delete initiated successfully')
+        db.session.commit()
+        return redirect(url_for('customer_home'))
+    else:
+        cust_id = request.args.get('cust_id', -1)
+        if cust_id != -1:
+            cust_ssn = request.args.get('cust_ssn')
+            if cust_ssn.strip() == '' and cust_id.strip() == '':
+                flash("Either one is mandatory and must be a 9-digit number")
+            else:
+                customer = db.session.query(Customer).filter(or_(Customer.cust_ssn == cust_ssn, Customer.cust_id == cust_id)).first()
+                if customer:
+                    flash("Customer Found !")
+                else:
+                    flash("No customer found with the given ID")
+
+    return render_template('delete_customer.html', page='delete_customer', customer=customer)
+
 
 @app.route('/customer/status')
 def customer_status():

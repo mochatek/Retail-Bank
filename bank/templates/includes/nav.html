@@ -1,8 +1,9 @@
 <nav class="navbar container" style="border-radius: 0%; background-color:yellow; opacity: 0.9;;margin-bottom: 0%;">
     <div class="container-fluid">
         <ul class="nav navbar-nav">
-            <li class="{% if page=='Index' %}active{% endif %}"><a href="{{ url_for('index') }}"><span class="glyphicon glyphicon-home"></span> Home</a></li>
-            <li class="{% if page=='Login' %}active{% endif %}"><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+            <li class="{% if page=='index' %}active{% endif %}"><a href="{{ url_for('index') }}"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+            <li class="{% if page=='register' %}active{% endif %}"><a href="{{ url_for('register') }}"><span class="glyphicon glyphicon-user"></span> Register</a></li>
+            <li class="{% if page=='login' %}active{% endif %}"><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
         </ul>
     </div>
 </nav>
