@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% include 'includes/customer_nav.html' %}
+{% endblock %}
+
+{% block content %}
+    {% for message in get_flashed_messages() %}
+        <p class="alert alert-info">{{ message }}</p>
+    {% endfor %}
+{% endblock %}

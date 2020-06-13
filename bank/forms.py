@@ -2,18 +2,25 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, TextAreaField
 from wtforms.validators import DataRequired, Length
 from wtforms import ValidationError
+# from bank.models import Login, db
 
 def only_number(form, field):
         if not field.data.isnumeric():
             raise ValidationError('Only numbers are Allowed.')
 
+# def must_be_unique(form, field):
+#         user = db.session.query(Login).filter(Login.uname==field.data).first()
+#         if user:
+#             raise ValidationError('Sorry! This username is already taken.')
+
 class RegisterForm(FlaskForm):
-    ssnid = StringField('SSN ID', validators=[DataRequired(message='Mandatory'), Length(min=9, max=9, message='Enter a valid 9-digit SSN ID'), only_number])
-    uname = StringField('Username', validators=[DataRequired(message='Mandatory')])
-    age = StringField('Age', validators=[DataRequired(message='Mandatory'), Length(min=2, max=3, message='Enter a valid age'), only_number])
-    addr1 = TextAreaField('Address lane 1', validators=[DataRequired(message='Mandatory')])
-    addr2 = TextAreaField('Address lane 2', validators=[DataRequired(message='Mandatory')])
-    city = StringField('City', validators=[DataRequired(message='Mandatory')])
-    state = StringField('State', validators=[DataRequired(message='Mandatory')])
-    password = PasswordField('Password', validators=[DataRequired(message='Mandatory'), Length(min=6, message='Minimum 6 digits needed')])
+    cust_ssn = StringField('Customer SSN', validators=[DataRequired(message='Mandatory'), Length(min=9, max=9, message='Enter a valid 9-digit SSN ID'), only_number])
+    cust_name = StringField('Name', validators=[DataRequired(message='Mandatory')])
+    cust_age = StringField('Age', validators=[DataRequired(message='Mandatory'), Length(min=2, max=3, message='Enter a valid age'), only_number])
+    cust_addr1 = TextAreaField('Address lane 1', validators=[DataRequired(message='Mandatory')])
+    cust_addr2 = TextAreaField('Address lane 2',)
+    cust_city = StringField('City', validators=[DataRequired(message='Mandatory')])
+    cust_state = StringField('State', validators=[DataRequired(message='Mandatory')])
+    # uname = StringField('Username', validators=[DataRequired(message='Mandatory'), must_be_unique])
+    # password = PasswordField('Password', validators=[DataRequired(message='Mandatory'), Length(min=6, message='Minimum 6 characters needed')])
     submit = SubmitField('Register')

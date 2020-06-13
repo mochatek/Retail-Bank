@@ -1,31 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Try</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename = '/css/style.css') }}">
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
+      a{
+          color:black;
+      }
+      li{
+          background-color: yellow;
+          color:black;
+          font:bold 16px Tahoma;
+      }
+      .active{
+          background-color: white;
+      }
+  </style>
 </head>
 <body>
-
-    <div id="header">
-        <header>
-            <h1>Marian Bank</h1>
-        </header>
+    <header class="container-fluid" style="background-color: black;">
+        <h2 style="font: bolder 30px Impact;"><span style="color:yellow; opacity: 0.9;">Marian </span><span style="color:white">Bank</span></h2>
+        <br>
         {% block nav %}
         {% endblock %}
-    </div>
-
-    <div id="content">
-            {% block content %}
-            {% endblock %}
+    </header>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-offset-2 col-sm-8" style="padding-top: 5%;padding-bottom: 9  %;">
+                {% block content %}
+                {% endblock %}
+            </div>
         </div>
-
-    <div id="footer">
-        <footer>
-            <h5>TCS Case Study (2020)</h5>
-        </footer>
     </div>
+
+    <footer class="container-fluid text-center bg-primary" style="background-color:black;color:yellow;opacity: 0.9;border-top:3px solid yellow">
+        <p style="padding:1%">TCS Case Study 2020</p>
+    </footer>
 
 </body>
 </html>
