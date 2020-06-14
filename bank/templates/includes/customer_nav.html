@@ -2,10 +2,10 @@
     <div class="container-fluid">
         <ul class="nav navbar-nav">
             <li class="{% if page=='customer_home' %}active{% endif %}"><a href="{{ url_for('customer_home') }}"><span class="glyphicon glyphicon-home"></span></a></li>
-            <li class="dropdown">
+            <li class="dropdown {% if page.endswith('customer') %}active{% endif %}">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Manage Customers
                 <span class="caret"></span></a>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu dropdown-menu-right">
                   <li class="{% if page=='create_customer' %}active{% endif %}"><a href="{{ url_for('create_customer') }}">Create Customer</a></li>
                   <li class="{% if page=='update_customer' %}active{% endif %}"><a href="{{ url_for('update_customer') }}">Update Customer</a></li>
                   <li class="{% if page=='delete_customer' %}active{% endif %}"><a href="{{ url_for('delete_customer') }}">Delete Customer</a></li>
@@ -14,12 +14,12 @@
             </li>
         </ul>
         <ul class="nav navbar-nav">
-            <li class="dropdown">
+            <li class="dropup {% if page.endswith('account') %}active{% endif %}">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Manage Accounts
                 <span class="caret"></span></a>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu dropdown-menu-right">
                   <li class="{% if page=='create_account' %}active{% endif %}"><a href="{{ url_for('create_account') }}">Create Account</a></li>
-                  <li class="{% if page=='delete_account' %}active{% endif %}"><a href="{{ url_for('delete_account') }}">Delete Customer</a></li>
+                  <li class="{% if page=='delete_account' %}active{% endif %}"><a href="{{ url_for('delete_account') }}">Delete Account</a></li>
                   <li class="{% if page=='account_status' %}active{% endif %}"><a href="{{ url_for('account_status') }}">Account Status</a></li>
                 </ul>
             </li>

@@ -1,8 +1,8 @@
-"""db updated
+"""empty message
 
-Revision ID: ec0a192a81a9
+Revision ID: e79fdfc8c943
 Revises: 
-Create Date: 2020-06-13 22:32:23.762315
+Create Date: 2020-06-14 13:46:21.365424
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ec0a192a81a9'
+revision = 'e79fdfc8c943'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -33,18 +33,18 @@ def upgrade():
     )
     op.create_index(op.f('ix_customer_cust_ssn'), 'customer', ['cust_ssn'], unique=True)
     op.create_table('login',
-    sa.Column('lid', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('uname', sa.String(length=20), nullable=True),
     sa.Column('password', sa.String(length=128), nullable=True),
     sa.Column('role', sa.String(length=20), nullable=True),
     sa.Column('last_login', sa.DateTime(), nullable=True),
-    sa.PrimaryKeyConstraint('lid'),
+    sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('uname')
     )
     op.create_table('transaction',
     sa.Column('tr_id', sa.Integer(), nullable=False),
-    sa.Column('tr_amount', sa.Float(), nullable=True),
-    sa.Column('tr_date', sa.Date(), nullable=True),
+    sa.Column('tr_amount', sa.Integer(), nullable=True),
+    sa.Column('tr_date', sa.DateTime(), nullable=True),
     sa.Column('tr_src', sa.Integer(), nullable=True),
     sa.Column('tr_trgt', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('tr_id')
@@ -53,8 +53,8 @@ def upgrade():
     sa.Column('acnt_id', sa.Integer(), nullable=False),
     sa.Column('cust_id', sa.Integer(), nullable=True),
     sa.Column('acnt_type', sa.String(length=20), nullable=True),
-    sa.Column('acnt_balance', sa.Float(), nullable=True),
-    sa.Column('acnt_last_tr_date', sa.Date(), nullable=True),
+    sa.Column('acnt_balance', sa.Integer(), nullable=True),
+    sa.Column('acnt_last_tr_date', sa.DateTime(), nullable=True),
     sa.Column('acnt_status', sa.String(length=20), nullable=True),
     sa.ForeignKeyConstraint(['cust_id'], ['customer.cust_id'], ),
     sa.PrimaryKeyConstraint('acnt_id')

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% include 'includes/customer_nav.html' %}
+{% endblock %}
+
+{% block content %}
+    <h4 class="text-center" style="font:bold 22px Impact">Customer Status</h4>
+    <hr>
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered text-center" style="border:2px solid black">
+            <tr style="background-color: yellow;opacity: 0.9;border:2px solid black">
+                <th>Account ID</th><th>Customer ID</th><th>Type</th><th>Balance</th><th>Status</th><th>Last Transaction</th><th>View</th>
+                {% for account in accounts %}
+                    <tr><td>{{ account.acnt_id }}</td>
+                    <td>{{ account.cust_id }}</td>
+                    <td>{{ account.acnt_type }}</td>
+                    <td>{{ account.acnt_balance }}</td>
+                    <td>{{ account.acnt_status }}</td>
+                    <td>{{ account.acnt_last_tr_date.strftime("%d-%m-%Y @ %H:%M:%S") }}</td>
+                    <td><a href="{{ url_for('delete_account', acnt_id=account.acnt_id) }}"><span class="glyphicon glyphicon-eye-open text-primary"></span></a></td></tr>
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
+    <br>
+{% endblock %}

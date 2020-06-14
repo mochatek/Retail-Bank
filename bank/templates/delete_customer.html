@@ -7,9 +7,13 @@
 {% block content %}
     <h4 class="text-center" style="font:bold 22px Impact">Delete Customer</h4>
     <hr>
-    {% for message in get_flashed_messages() %}
-        <p class="alert alert-info">{{ message }}</p>
-    {% endfor %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="alert alert-{{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     <div class="col-sm-offset-2 col-sm-10">
     <form class="form-inline" action="" method="GET" novalidate>
         <div class="form-group">
@@ -63,6 +67,7 @@
                     {% else %}
                     <button type="submit" class="btn btn-success">Reactivate</button>
                     {% endif %}
+                    <span style='margin-left: 5%;'>You can Update this customer <a class="text-info text-bold" href="{{ url_for('update_customer', cust_ssn=customer.cust_ssn, cust_id=customer.cust_id) }}"><b>Here</b></a></span>
                 </div>
             </div>
         </form>

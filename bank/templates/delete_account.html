@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% include 'includes/customer_nav.html' %}
+{% endblock %}
+
+{% block content %}
+    <h4 class="text-center" style="font:bold 22px Impact">Delete Account</h4>
+    <hr>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="alert alert-{{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div class="col-sm-offset-4 col-sm-8">
+    <form class="form-inline" action="" method="GET" novalidate>
+        <div class="form-group">
+            <select name="acnt_id" id="acnt_id" class="form-control">
+                <option value="-1">-- Select Account ID --</option>
+                {% for acnt_id in acnt_ids %}
+                    <option value="{{ acnt_id[0] }}">{{ acnt_id[0] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-info">Search</button>
+        </div>
+    </form>
+    <br>
+    <br>
+</div>
+    {% if account %}
+        <hr>
+        <form action="" method="post" class="form-horizontal" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="acnt_id">Account ID</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="acnt_id" name="acnt_id" value="{{ account.acnt_id }}" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="cust_id">Customer ID</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="cust_id" name="cust_id" value="{{ account.cust_id }}" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="acnt_type">Account Type</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="acnt_type" name="acnt_type" value="{{ account.acnt_type }}" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="acnt_balance">Account Balance</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="acnt_balance" name="acnt_balance" value="₹. {{ account.acnt_balance }}" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="acnt_status">Account Status</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="acnt_status" name="acnt_status" value="{{ account.acnt_status }}" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="acnt_last_tr_date">Last Transaction</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="acnt_last_tr_date" name="acnt_last_tr_date" value="{{ account.acnt_last_tr_date.strftime('%d-%m-%Y @ %H:%M:%S') }}" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    {% if account.acnt_status != "Deleted" %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    {% else %}
+                    <button type="submit" class="btn btn-success">Reactivate</button>
+                    {% endif %}
+                    <span style='margin-left: 5%;'>You can check this customer <a class="text-info text-bold" href="{{ url_for('delete_customer', cust_ssn='', cust_id=account.cust_id) }}"><b>Here</b></a></span>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+<br>
+<br>
+{% endblock %}

@@ -1,12 +1,18 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Length
 from wtforms import ValidationError
-from bank.models import Login, db
+from bank.models import Login, db, Customer
 
 def only_number(form, field):
         if not field.data.isnumeric():
             raise ValidationError('Only numbers are Allowed.')
+
+def valid_amount(form, field):
+        try:
+            val = int(field.data)
+        except:
+            raise ValidationError('Not a valid amount')
 
 def must_be_unique(form, field):
         user = db.session.query(Login).filter(Login.uname==field.data).first()
@@ -29,3 +35,13 @@ class RegisterForm(FlaskForm):
 class LoginForm(FlaskForm):
     uname = StringField('Username', validators=[DataRequired(message='Mandatory'), Length(min=6, message='Minimum 6 characters needed'), must_be_unique])
     password = PasswordField('Password', validators=[DataRequired(message='Mandatory'), Length(min=6, message='Minimum 6 characters needed')])
+
+class AccountForm(FlaskForm):
+    CUST_IDS = []
+    customers = db.session.query(Customer).all()
+    for customer in customers:
+        CUST_IDS.append((str(customer.cust_id), customer.cust_id))
+    cust_id = SelectField('Customer ID', choices=CUST_IDS)
+    acnt_type = SelectField('Account Type', choices=[('Current','current'), ('Savings', 'savings')])
+    deposit_amnt = StringField('Deposit Amount', validators=[DataRequired(message='Mandatory'), valid_amount])
+    submit = SubmitField('Submit')

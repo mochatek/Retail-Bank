@@ -5,7 +5,22 @@
 {% endblock %}
 
 {% block content %}
-    {% for message in get_flashed_messages() %}
-        <p class="alert alert-info">{{ message }}</p>
-    {% endfor %}
+    <h4 class="text-center" style="font:bold 22px Impact">Customer Executive Home</h4>
+    <hr>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="alert alert-{{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <br>
+    <div class="text-center">
+        <img src="{{ url_for('static', filename='images/user.png') }}" class="img-rounded" alt="User Image">
+        <br>
+        <br>
+        <p>Name : <span class="text-danger" style="font:bold 16px Tahoma;">{{ current_user.uname }}</span style="font:bold 16px Tahoma;"></p>
+        <p>Last Login : <span class="text-info" style="font:bold 12px Tahoma;">{{ current_user.last_login.strftime("%d-%m-%Y @ %H:%M:%S") }}</span style="font:bold 16px Tahoma;"></p>
+    </div>
+    <br>
 {% endblock %}

@@ -4,40 +4,43 @@
   <title>Bootstrap Example</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   <style>
-      a{
-          color:black;
-      }
-      li{
-          background-color: yellow;
-          color:black;
-          font:bold 16px Tahoma;
-      }
-      .active{
-          background-color: white;
-      }
+        a {
+            color:black;
+        }
+        li {
+            background-color: yellow;
+            color:black;
+            font:bolder 14px tahoma;
+        }
+        .active {
+            background-color: white;
+        }
+        th {
+            text-align: center;
+        }
   </style>
 </head>
 <body>
     <header class="container-fluid" style="background-color: black;">
-        <h2 style="font: bolder 30px Impact;"><span style="color:yellow; opacity: 0.9;">Marian </span><span style="color:white">Bank</span></h2>
+        <h2 style="font: bolder 30px Impact;"><span style="color:yellow; opacity: 0.9;">Mocha </span><span style="color:white">Bank</span></h2>
         <br>
         {% block nav %}
         {% endblock %}
     </header>
     <div class="container">
         <div class="row">
-            <div class="col-sm-offset-2 col-sm-8" style="padding-top: 5%;padding-bottom: 9  %;">
+            <div class="col-sm-offset-2 col-sm-8" style="padding-top: 5%;padding-bottom: 9%;">
                 {% block content %}
                 {% endblock %}
             </div>
         </div>
     </div>
 
-    <footer class="container-fluid text-center bg-primary" style="background-color:black;color:yellow;opacity: 0.9;border-top:3px solid yellow">
+    <footer class="container-fluid text-center bg-primary" style="background-color:black;color:yellow;opacity: 0.9;border-top:3px solid yellow;">
         <p style="padding:1%">TCS Case Study 2020</p>
     </footer>
 

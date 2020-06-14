@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% include 'includes/customer_nav.html' %}
+{% endblock %}
+
+{% block content %}
+    <h4 class="text-center" style="font:bold 22px Impact">Customer Status</h4>
+    <hr>
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered text-center" style="border:2px solid black">
+            <tr style="background-color: yellow;opacity: 0.9;border:2px solid black">
+                <th>Customer ID</th><th>SSN</th><th>Name</th><th>Status</th><th>Last Update</th><th>Profile</th>
+                {% for customer in customers %}
+                    <tr><td>{{customer.cust_id}}</td>
+                    <td>{{customer.cust_ssn}}</td>
+                    <td>{{customer.cust_name}}</td>
+                    <td>{{customer.cust_status}}</td>
+                    <td>{{customer.cust_last_update}}</td>
+                    <td><a href="{{ url_for('delete_customer', cust_ssn=customer.cust_ssn, cust_id=customer.cust_id) }}"><span class="glyphicon glyphicon-eye-open text-primary"></span></a></td></tr>
+                    {% endfor %}
+            </tr>
+        </table>
+    </div>
+    <br>
+{% endblock %}
