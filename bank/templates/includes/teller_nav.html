@@ -1,0 +1,12 @@
+<nav class="navbar container" style="border-radius: 0%; background-color:yellow; opacity: 0.9;;margin-bottom: 0%;">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav">
+            <li class="{% if page=='teller_home' %}active{% endif %}"><a href="{{ url_for('teller_home') }}"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+            <li class="{% if page=='account_details' %}active{% endif %}"><a href="{{ url_for('account_details') }}"><span class="glyphicon glyphicon-user"></span> Account Details</a></li>
+            <li class="{% if page=='statement' %}active{% endif %}"><a href="{{ url_for('statement') }}"><span class="glyphicon glyphicon-log-in"></span> Statement</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+        </ul>
+    </div>
+</nav>

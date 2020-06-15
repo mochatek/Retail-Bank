@@ -1,0 +1,48 @@
+{% if account %}
+    <hr>
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label col-sm-4 text-left" for="acnt_id">Account ID</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="acnt_id" name="acnt_id" value="{{ account.acnt_id }}" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-4" for="cust_id">Customer ID</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="cust_id" name="cust_id" value="{{ account.cust_id }}" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-4" for="acnt_type">Account Type</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="acnt_type" name="acnt_type" value="{{ account.acnt_type }}" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-4" for="acnt_balance">Account Balance</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="acnt_balance" name="acnt_balance" value="₹. {{ account.acnt_balance }}" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-4" for="acnt_status">Account Status</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="acnt_status" name="acnt_status" value="{{ account.acnt_status }}" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-4" for="acnt_last_tr_date">Last Transaction</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="acnt_last_tr_date" name="acnt_last_tr_date" value="{{ account.acnt_last_tr_date.strftime('%d-%m-%Y @ %H:%M:%S') }}" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-8">
+                <a class="form-control-static btn btn-success" href="{{ url_for('deposit', acnt_id=account.acnt_id) }}">Deposit</a>
+                <a class="form-control-static btn btn-primary" style='margin-left:9%' href="{{ url_for('withdraw', acnt_id=account.acnt_id) }}">Withdraw</a>
+                <a class="form-control-static btn btn-warning" style='margin-left:9%' href="{{ url_for('transfer', acnt_id=account.acnt_id) }}">Transfer</a>
+            </div>
+        </div>
+    </div>
+{% endif %}

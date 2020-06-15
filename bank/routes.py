@@ -25,11 +25,14 @@ def login():
         remember_me = bool(request.form.get('remember_me'))
         user = db.session.query(Login).filter(Login.uname==uname, Login.role==role).first()
         if user and user.check_password(password):
+            login_user(user, remember=remember_me)
             user.last_login = datetime.now()
             db.session.commit()
-            login_user(user, remember=remember_me)
             flash('Successfully Logged in.', category='success')
-            return redirect(url_for('customer_home'))
+            if user.role == 'customer':
+                return redirect(url_for('customer_home'))
+            else:
+                return redirect(url_for('teller_home'))
         else:
             flash('Username-Password mismatch !!', category='danger')
         return redirect(url_for('login'))
@@ -218,6 +221,67 @@ def delete_account():
 def account_status():
     accounts = db.session.query(Account).all()
     return render_template('account_status.html', page='account_status', accounts=accounts)
+
+@app.route('/teller')
+@login_required
+def teller_home():
+    return render_template('teller_home.html', page='teller_home')
+
+
+@app.route('/teller/account_details', methods=['GET', 'POST'])
+@login_required
+def account_details():
+    key = None
+    account = None
+    if request.method == 'POST':
+        cust_id = request.form.get('cust_id')
+        acnt_id = request.form.get('acnt_id')
+        if acnt_id.strip() == '' and cust_id.strip() == '':
+                flash("Either one is mandatory", category='danger')
+        else:
+            account = db.session.query(Account).filter(Account.acnt_id == acnt_id).first()
+            if account:
+                key = 'acnt_id'
+                flash("Account Found !", category='success')
+            else:
+                account = db.session.query(Account.acnt_id, Account.acnt_type).filter(Account.cust_id == cust_id).all()
+                if account:
+                    key = 'cust_id'
+                    flash("Customer found. Choose Account to continue.", category='info')
+                else:
+                    flash("Sorry, No accounts matching your query", category='danger')
+    return render_template('account_details.html', page='account_details', key=key, account=account)
+
+
+@app.route('/teller/deposit')
+@login_required
+def deposit():
+    return render_template('deposit.html', page='account_details')
+
+
+@app.route('/teller/withdraw')
+@login_required
+def withdraw():
+    return render_template('withdraw.html', page='account_details')
+
+
+@app.route('/teller/transfer')
+@login_required
+def transfer():
+    return render_template('transfer.html', page='account_details')
+
+
+@app.route('/teller/statement')
+@login_required
+def statement():
+    return render_template('statement.html', page='statement')
+
+
+@app.route('/api/acnt_api')
+def acnt_api():
+        acnt_id = int(request.args.get('acnt_id'))
+        account = db.session.query(Account).filter(Account.acnt_id == acnt_id).first()
+        return render_template('includes/acnt_api.html', account=account)
 
 @app.route('/logout')
 @login_required
