@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, url_for, flash
 from bank.models import Customer, Login, Account, Transaction, db
 from datetime import datetime
 from bank.forms import RegisterForm, LoginForm, AccountForm
-from sqlalchemy import or_
+from sqlalchemy import or_, desc
 from flask_login import current_user, login_user, logout_user, login_required
 
 @app.route('/')
@@ -176,7 +176,7 @@ def create_account():
     form = AccountForm()
     cust_ids = db.session.query(Customer.cust_id).all()
     if form.validate_on_submit():
-        cust_id = int(form.cust_id.data)
+        cust_id = int(request.form.get('cust_id'))
         acnt_type = form.acnt_type.data
         deposit_amnt = form.deposit_amnt.data
         acnt_last_tr_date = datetime.now()
@@ -185,6 +185,10 @@ def create_account():
         account = Account(cust_id=cust_id, acnt_type=acnt_type, acnt_balance=deposit_amnt,
                          acnt_last_tr_date=acnt_last_tr_date, acnt_status=acnt_status, acnt_message=acnt_message)
         db.session.add(account)
+        db.session.flush()
+        trnsctn = Transaction(tr_amount=deposit_amnt, tr_type="Credit (A/C Opened)", tr_date=acnt_last_tr_date,
+                                tr_src=account.acnt_id, tr_trgt=-1)
+        db.session.add(trnsctn)
         db.session.commit()
         flash('Account creation initiated successfull !.', category='info')
         return redirect(url_for('customer_home'))
@@ -277,6 +281,9 @@ def deposit():
             account.acnt_balance += int(tr_amount)
             account.acnt_last_tr_date = datetime.now()
             account.acnt_message = '₹. {} Deposited'.format(tr_amount)
+            trnsctn = Transaction(tr_amount=int(tr_amount), tr_type="Credit (Deposit)", tr_date=account.acnt_last_tr_date,
+                                tr_src=int(acnt_id), tr_trgt=-1)
+            db.session.add(trnsctn)
             db.session.commit()
             flash("Amount deposited successfully", category="success")
     else:
@@ -304,6 +311,9 @@ def withdraw():
                 account.acnt_balance -= int(tr_amount)
                 account.acnt_last_tr_date = datetime.now()
                 account.acnt_message = '₹. {} Withdrawn'.format(tr_amount)
+                trnsctn = Transaction(tr_amount=int(tr_amount), tr_type="Debit (Withdraw)", tr_date=account.acnt_last_tr_date,
+                                    tr_src=int(acnt_id), tr_trgt=-1)
+                db.session.add(trnsctn)
                 db.session.commit()
                 flash("Amount withdrawn successfully", category="success")
     else:
@@ -329,17 +339,20 @@ def transfer():
             flash("Not a valid amount", category="danger")
         else:
             tr_amount = int(tr_amount)
-            account_src = db.session.query(Account).filter(Account.acnt_id == src_acnt).first()
+            account_src = db.session.query(Account).filter(Account.acnt_id == int(src_acnt)).first()
             if tr_amount > account_src.acnt_balance:
                 flash("Insufficient balance ! Choose a smaller amount", category="warning")
             else:
                 account_src.acnt_balance -= tr_amount
-                account_trgt = db.session.query(Account).filter(Account.acnt_id == trgt_acnt).first()
+                account_trgt = db.session.query(Account).filter(Account.acnt_id == int(trgt_acnt)).first()
                 account_trgt.acnt_balance += tr_amount
                 account_src.acnt_message = '-₹. {} Transfered'.format(tr_amount)
                 account_trgt.acnt_message = '+₹. {} Transfered'.format(tr_amount)
                 account_src.acnt_last_tr_date = datetime.now()
                 account_trgt.acnt_last_tr_date = datetime.now()
+                trnsctn = Transaction(tr_amount=int(tr_amount), tr_type="Debit (Transfer)", tr_date=account_src.acnt_last_tr_date,
+                                    tr_src=int(src_acnt), tr_trgt=int(trgt_acnt))
+                db.session.add(trnsctn)
                 db.session.commit()
                 flash("Amount transfered successfully !", category="success")
                 tr_history = {}
@@ -359,7 +372,28 @@ def transfer():
 @app.route('/teller/statement')
 @login_required
 def statement():
-    return render_template('statement.html', page='statement')
+    trnsctn = None
+    acnt_ids = db.session.query(Account.acnt_id).all()
+    no_of_tr = request.args.get('no_of_tr', -1)
+    if no_of_tr != -1:
+        acnt_id = request.args.get('acnt_id')
+        dt_from = request.args.get('dt_from')
+        dt_to = request.args.get('dt_to')
+        if no_of_tr != '-1':
+            trnsctn = db.session.query(Transaction).filter(or_(Transaction.tr_src == acnt_id, Transaction.tr_trgt == acnt_id)).order_by(desc(Transaction.tr_id)).limit(no_of_tr).all()
+            if trnsctn:
+                flash("Account statement generated for Account ID : {}".format(acnt_id), category="success")
+            else:
+                flash("No transactions matching your query", category="info")
+        elif dt_from.strip() != '' and dt_to.strip() != '':
+            trnsctn = db.session.query(Transaction).filter(or_(Transaction.tr_src == acnt_id, Transaction.tr_trgt == acnt_id), Transaction.tr_date.between(dt_from, dt_to)).all()
+            if trnsctn:
+                flash("Account statement generated for Account ID : {}".format(acnt_id), category="success")
+            else:
+                flash("No transactions matching your query", category="info")
+        else:
+            flash("Either one is mandatory", category="danger")
+    return render_template('statement.html', page='statement', acnt_ids=acnt_ids, trnsctn=trnsctn)
 
 
 @app.route('/api/acnt_api')

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% include 'includes/teller_nav.html' %}
+{% endblock %}
+
+{% block content %}
+    <h4 class="text-center" style="font:bold 22px Impact">Teller Home</h4>
+    <hr>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="alert alert-{{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div class="col-sm-offset-2 col-sm-10">
+        <form class="form-horizontal" action="" method="GET" novalidate>
+            <div class="form-group">
+                <label for="acnt_id" class="control-label col-sm-2">Account ID</label>
+                <div class="col-sm-10">
+                    <select name="acnt_id" id="acnt_id" class="form-control">
+                        {% for acnt_id in acnt_ids %}
+                            <option value="{{ acnt_id[0] }}">{{ acnt_id[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="no_of_tr" class="control-label col-sm-2">Show last</label>
+                <div class="col-sm-8">
+                    <select name="no_of_tr" id="no_of_tr" class="form-control">
+                        <option value="-1">N</option>
+                        {% for i in range(1,11) %}
+                            <option value="{{ i }}">{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <label class="col-sm-2">Transactions</label>
+            </div>
+            <div>
+                <label class="col-sm-12 text-center alert-danger">OR</label>
+                <br>
+            </div>
+            <div>
+                <br>
+                <label class="col-sm-2">Between</label>
+                <div class="col-sm-4">
+                    <input type="date" name="dt_from" id="dt_from" class="form-control">
+                </div>
+                <label class="col-sm-2">and</label>
+                <div class="col-sm-4">
+                    <input type="date" name="dt_to" id="dt_to" class="form-control">
+                </div>
+                <br>
+            </div>
+            <div class="col-sm-offset-4 col-sm-4">
+                <br>
+                <button type="submit" class="btn btn-primary">Get Statement</button>
+                <br>
+            </div>
+        </form>
+    </div>
+    {% if trnsctn %}
+    <div class="col-sm-offset-2 col-sm-10">
+        <br>
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered text-center" style="border:2px solid black">
+            <tr style="background-color: yellow;opacity: 0.9;border:2px solid black">
+                <th>Transaction ID</th><th>Date</th><th>Type</th><th>Amount</th></tr>
+                {% for tr in trnsctn %}
+                    <tr><td>{{ tr.tr_id }}</td>
+                    <td>{{ tr.tr_date.strftime("%d-%m-%Y @ %H:%M:%S") }}</td>
+                    <td>
+                        {% if tr.tr_trgt != -1 %}
+                        Credit (Transfer from #A/C : {{ tr.tr_src }})
+                        {% else %}
+                        {{ tr.tr_type }}
+                        {% endif %}
+                    </td>
+                    <td>₹. {{ tr.tr_amount }}</td></tr>
+                {% endfor %}
+        </table>
+    </div>
+</div>
+        {% endif %}
+    <br>
+    <br>
+    {% endblock %}
