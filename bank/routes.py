@@ -74,9 +74,10 @@ def create_customer():
         cust_city = form.cust_city.data
         cust_state = form.cust_state.data
         cust_last_update = datetime.now()           #Timestamp of creation.
-        cust_status = 'Created'
+        cust_status = 'Active'
+        cust_message = 'Profile Created'
         customer = Customer(cust_ssn=cust_ssn, cust_name=cust_name, cust_age=cust_age, cust_addr1=cust_addr1,
-                    cust_addr2=cust_addr2, cust_city=cust_city, cust_state=cust_state, cust_last_update=cust_last_update, cust_status=cust_status)
+                    cust_addr2=cust_addr2, cust_city=cust_city, cust_state=cust_state, cust_last_update=cust_last_update, cust_status=cust_status, cust_message=cust_message)
         db.session.add(customer)
         db.session.commit()
         flash('Customer creation initiated successfull !.', category='info')
@@ -107,7 +108,7 @@ def update_customer():
             customer.cust_name = cust_name
             customer.cust_age = cust_age
             customer.cust_addr1 = cust_addr1
-            customer.cust_status = 'Updated'
+            customer.cust_message = 'Profile Updated'
             customer.cust_last_update = datetime.now()
             db.session.commit()
             flash('Customer update initiated successfully', category='info')
@@ -136,10 +137,12 @@ def delete_customer():
         cust_id = request.form.get('cust_id')
         customer = db.session.query(Customer).filter(Customer.cust_id == cust_id).first()
         if customer.cust_status == 'Deleted':
-            customer.cust_status = 'Reactivated'
+            customer.cust_status = 'Active'
+            customer.cust_message = 'Profile Reactivated'
             flash('Customer reactivate initiated successfully', category='info')
         else:
             customer.cust_status = 'Deleted'
+            customer.cust_message = 'Profile Deleted'
             flash('Customer delete initiated successfully', category='info')
         customer.cust_last_update = datetime.now()
         db.session.commit()
@@ -171,20 +174,22 @@ def customer_status():
 @login_required
 def create_account():
     form = AccountForm()
+    cust_ids = db.session.query(Customer.cust_id).all()
     if form.validate_on_submit():
         cust_id = int(form.cust_id.data)
         acnt_type = form.acnt_type.data
         deposit_amnt = form.deposit_amnt.data
         acnt_last_tr_date = datetime.now()
-        acnt_status = 'Created'
+        acnt_status = 'Active'
+        acnt_message = 'Account Created'
         account = Account(cust_id=cust_id, acnt_type=acnt_type, acnt_balance=deposit_amnt,
-                         acnt_last_tr_date=acnt_last_tr_date, acnt_status=acnt_status)
+                         acnt_last_tr_date=acnt_last_tr_date, acnt_status=acnt_status, acnt_message=acnt_message)
         db.session.add(account)
         db.session.commit()
         flash('Account creation initiated successfull !.', category='info')
         return redirect(url_for('customer_home'))
     else:
-        return render_template('create_account.html', page='create_account', form=form)
+        return render_template('create_account.html', page='create_account', form=form, cust_ids=cust_ids)
 
 
 @app.route('/account/delete', methods=['GET', 'POST'])
@@ -196,10 +201,12 @@ def delete_account():
         account = db.session.query(Account).filter(Account.acnt_id == acnt_id).first()
         print(account.acnt_status)
         if account.acnt_status == 'Deleted':
-            account.acnt_status = 'Reactivated'
+            account.acnt_status = 'Active'
+            account.acnt_message = 'Account Reactivated'
             flash('Account reactivate initiated successfully', category='info')
         else:
             account.acnt_status = 'Deleted'
+            account.acnt_message = 'Account Deleted'
             flash('Account delete initiated successfully', category='info')
         account.acnt_last_tr_date = datetime.now()
         db.session.commit()
@@ -269,6 +276,7 @@ def deposit():
             prev_balance = account.acnt_balance
             account.acnt_balance += int(tr_amount)
             account.acnt_last_tr_date = datetime.now()
+            account.acnt_message = '₹. {} Deposited'.format(tr_amount)
             db.session.commit()
             flash("Amount deposited successfully", category="success")
     else:
@@ -295,6 +303,7 @@ def withdraw():
             else:
                 account.acnt_balance -= int(tr_amount)
                 account.acnt_last_tr_date = datetime.now()
+                account.acnt_message = '₹. {} Withdrawn'.format(tr_amount)
                 db.session.commit()
                 flash("Amount withdrawn successfully", category="success")
     else:
@@ -306,9 +315,45 @@ def withdraw():
 @app.route('/teller/transfer', methods=['GET', 'POST'])
 @login_required
 def transfer():
+    tr_history = None
     if request.method == 'POST':
-        pass
-    return render_template('transfer.html', page='account_details')
+        cust_id = request.form.get('cust_id')
+        src_acnt = request.form.get('src_acnt')
+        trgt_acnt = request.form.get('trgt_acnt')
+        tr_amount = request.form.get('tr_amount')
+        if src_acnt == '-1':
+            flash("Select source account to initiate transfer", category="danger")
+        elif trgt_acnt == '-1':
+            flash("Select target account to initiate transfer", category="danger")
+        elif not tr_amount.isnumeric():
+            flash("Not a valid amount", category="danger")
+        else:
+            tr_amount = int(tr_amount)
+            account_src = db.session.query(Account).filter(Account.acnt_id == src_acnt).first()
+            if tr_amount > account_src.acnt_balance:
+                flash("Insufficient balance ! Choose a smaller amount", category="warning")
+            else:
+                account_src.acnt_balance -= tr_amount
+                account_trgt = db.session.query(Account).filter(Account.acnt_id == trgt_acnt).first()
+                account_trgt.acnt_balance += tr_amount
+                account_src.acnt_message = '-₹. {} Transfered'.format(tr_amount)
+                account_trgt.acnt_message = '+₹. {} Transfered'.format(tr_amount)
+                account_src.acnt_last_tr_date = datetime.now()
+                account_trgt.acnt_last_tr_date = datetime.now()
+                db.session.commit()
+                flash("Amount transfered successfully !", category="success")
+                tr_history = {}
+                tr_history['src'] = {'acnt_id':src_acnt, 'prev_bal':account_src.acnt_balance+tr_amount,
+                                    'tr_amount':tr_amount, 'crnt_bal':account_src.acnt_balance}
+                tr_history['trgt'] = {'acnt_id':trgt_acnt, 'prev_bal':account_trgt.acnt_balance-tr_amount,
+                                    'tr_amount':tr_amount, 'crnt_bal':account_trgt.acnt_balance}
+
+    cust_id = request.args.get('cust_id')
+    src_account = db.session.query(Account.acnt_id, Account.acnt_type).filter(Account.cust_id == cust_id).all()
+    src_acnt_ids = [acnt[0] for acnt in src_account]
+    trgt_account = db.session.query(Account.acnt_id).filter(Account.acnt_id.notin_(src_acnt_ids)).all()
+    return render_template('transfer.html', page='account_details', cust_id=cust_id, src_account=src_account, trgt_account=trgt_account, tr_history=tr_history)
+
 
 
 @app.route('/teller/statement')

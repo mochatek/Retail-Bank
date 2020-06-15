@@ -18,6 +18,7 @@ class Customer(db.Model):
     cust_state = db.Column(db.String(20), index=False, unique=False)
     cust_last_update = db.Column(db.Date, index=False, unique=False)
     cust_status = db.Column(db.String(20), index=False, unique=False)
+    cust_message = db.Column(db.String(20), index=False, unique=False)
     account = db.relationship('Account', backref='customer')
 
 
@@ -40,13 +41,15 @@ class Account(db.Model):
     cust_id = db.Column(db.Integer, db.ForeignKey('customer.cust_id'))
     acnt_type = db.Column(db.String(20), index=False, unique=False)
     acnt_balance = db.Column(db.Integer, index=False, unique=False)
-    acnt_last_tr_date = db.Column(db.DateTime, index=False, unique=False)
     acnt_status = db.Column(db.String(20), index=False, unique=False)
+    acnt_last_tr_date = db.Column(db.DateTime, index=False, unique=False)
+    acnt_message = db.Column(db.String(20), index=False, unique=False)
 
 
 class Transaction(db.Model):
     tr_id = db.Column(db.Integer, primary_key=True)
     tr_amount = db.Column(db.Integer, index=False, unique=False)
+    tr_type = db.Column(db.String(20), index=False, unique=False)
     tr_date = db.Column(db.DateTime, index=False, unique=False)
     tr_src= db.Column(db.Integer, index=False, unique=False)
     tr_trgt= db.Column(db.Integer, index=False, unique=False)

@@ -37,11 +37,11 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(message='Mandatory'), Length(min=6, message='Minimum 6 characters needed')])
 
 class AccountForm(FlaskForm):
-    CUST_IDS = []
-    customers = db.session.query(Customer).all()
-    for customer in customers:
-        CUST_IDS.append((str(customer.cust_id), customer.cust_id))
-    cust_id = SelectField('Customer ID', choices=CUST_IDS)
+    # CUST_IDS = []
+    # customers = db.session.query(Customer).all()
+    # for customer in customers:
+    #     CUST_IDS.append((str(customer.cust_id), customer.cust_id))
+    # cust_id = SelectField('Customer ID', choices=CUST_IDS)
     acnt_type = SelectField('Account Type', choices=[('Current','current'), ('Savings', 'savings')])
     deposit_amnt = StringField('Deposit Amount', validators=[DataRequired(message='Mandatory'), valid_amount])
     submit = SubmitField('Submit')

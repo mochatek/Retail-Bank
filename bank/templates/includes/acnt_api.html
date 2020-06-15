@@ -41,7 +41,7 @@
             <div class="col-sm-offset-4 col-sm-8">
                 <a class="form-control-static btn btn-success" href="{{ url_for('deposit', acnt_id=account.acnt_id) }}">Deposit</a>
                 <a class="form-control-static btn btn-primary"  href="{{ url_for('withdraw', acnt_id=account.acnt_id) }}">Withdraw</a>
-                <a class="form-control-static btn btn-warning"  href="{{ url_for('transfer', acnt_id=account.acnt_id) }}">Transfer</a>
+                <a class="form-control-static btn btn-warning"  href="{{ url_for('transfer', cust_id=account.cust_id) }}">Transfer</a>
             </div>
         </div>
     </div>

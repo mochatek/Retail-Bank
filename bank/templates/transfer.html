@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% include 'includes/teller_nav.html' %}
+{% endblock %}
+
+{% block content %}
+    <h4 class="text-center" style="font:bold 22px Impact">Transfer Amount</h4>
+    <hr>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="alert alert-{{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <br>
+    <div class="col-sm-offset-2 col-sm-10">
+        <form action="" method="post" class="form-horizontal" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="cust_id" value="{{ cust_id }}">
+            <pre class="text-center" style="font-size: large;"><b>Customer ID : <span class="text-danger">{{ cust_id }}</span></b></pre>
+            <br>
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="src_acnt">Source Account</label>
+                <div class="col-sm-9">
+                    <select class="form-control" name="src_acnt" id="src_acnt">
+                        <option value="-1">-- Select source account --</option>
+                        {% for acnt_id, acnt_type in src_account %}
+                        <option value="{{ acnt_id }}">{{ acnt_type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <br>
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="src_acnt">Target Account</label>
+                <div class="col-sm-9">
+                    <select class="form-control" name="trgt_acnt" id="trgt_acnt">
+                        <option value="-1">-- Select target account --</option>
+                        {% for acnt_id in trgt_account %}
+                        <option value="{{ acnt_id[0] }}">{{ acnt_id[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <br>
+            <div class="form-group">
+                <div class="col-sm-9">
+                    <label class="control-label col-sm-4" for="tr_amount">Transfer Amount</label>
+                    <div class="col-sm-8">
+                    <input type="text" name="tr_amount" id="tr_amount" class="form-control" placeholder="Transfer Amount">
+                </div>
+            </div>
+                <div class="col-sm-3">
+                    <button type="submit" class="btn btn-warning">Transfer</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <br>
+    <br>
+    <br>
+    {% if tr_history %}
+    <div class="container-fluid">
+        <div class="col-sm-12" style="margin:3%">
+            <h4 class="alert alert-success" style="text-align: center;font-family: Impact;">Transfer History</h4>
+        </div>
+        {% for acnt in tr_history %}
+            <div class="form-horizontal col-sm-6">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        {% if acnt == 'src' %}
+                            <p class="alert alert-info text-center"><b>Source</b></p>
+                        {% else %}
+                        <p class="alert alert-warning  text-center"><b>Target</b></p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4 text-left" for="acnt_id">Account ID</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="acnt_id" name="acnt_id" value='{{ tr_history[acnt]["acnt_id"] }}' readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4 text-left" for="prev_bal">Previous Balance</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="prev_bal" name="prev_bal" value='₹. {{ tr_history[acnt]["prev_bal"] }}' readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4 text-left" for="tr_amount">Transfer Amount</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="tr_amount" name="tr_amount" value='₹. {{ tr_history[acnt]["tr_amount"] }}' readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4 text-left" for="crnt_bal">Current Balance</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="crnt_bal" name="crnt_bal" value='₹. {{ tr_history[acnt]["crnt_bal"] }}' readonly>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <br>
+{% endblock %}
