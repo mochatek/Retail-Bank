@@ -253,21 +253,61 @@ def account_details():
     return render_template('account_details.html', page='account_details', key=key, account=account)
 
 
-@app.route('/teller/deposit')
+@app.route('/teller/deposit', methods=['GET', 'POST'])
 @login_required
 def deposit():
-    return render_template('deposit.html', page='account_details')
+    account = None
+    prev_balance = None
+    tr_amount = None
+    if request.method == 'POST':
+        acnt_id = request.form.get('acnt_id')
+        tr_amount = request.form.get('tr_amount')
+        if not tr_amount.isnumeric():
+            flash("Not a valid amount", "danger")
+        else:
+            account = db.session.query(Account).filter(Account.acnt_id == int(acnt_id)).first()
+            prev_balance = account.acnt_balance
+            account.acnt_balance += int(tr_amount)
+            account.acnt_last_tr_date = datetime.now()
+            db.session.commit()
+            flash("Amount deposited successfully", category="success")
+    else:
+        acnt_id = request.args.get('acnt_id')
+    return render_template('deposit.html', page='account_details', tr_amount=tr_amount, acnt_id=acnt_id, prev_balance=prev_balance, account=account)
 
 
-@app.route('/teller/withdraw')
+@app.route('/teller/withdraw', methods=['GET', 'POST'])
 @login_required
 def withdraw():
-    return render_template('withdraw.html', page='account_details')
+    account = None
+    prev_balance = None
+    tr_amount = None
+    if request.method == 'POST':
+        acnt_id = request.form.get('acnt_id')
+        tr_amount = request.form.get('tr_amount')
+        if not tr_amount.isnumeric():
+            flash("Not a valid amount", "danger")
+        else:
+            account = db.session.query(Account).filter(Account.acnt_id == int(acnt_id)).first()
+            prev_balance = account.acnt_balance
+            if prev_balance < int(tr_amount) :
+                flash("Insufficient balance ! Choose a smaller amount", category="warning")
+            else:
+                account.acnt_balance -= int(tr_amount)
+                account.acnt_last_tr_date = datetime.now()
+                db.session.commit()
+                flash("Amount withdrawn successfully", category="success")
+    else:
+        acnt_id = request.args.get('acnt_id')
+    return render_template('withdraw.html', page='account_details', tr_amount=tr_amount, acnt_id=acnt_id, prev_balance=prev_balance, account=account)
 
 
-@app.route('/teller/transfer')
+
+@app.route('/teller/transfer', methods=['GET', 'POST'])
 @login_required
 def transfer():
+    if request.method == 'POST':
+        pass
     return render_template('transfer.html', page='account_details')
 
 

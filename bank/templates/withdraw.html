@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% include 'includes/teller_nav.html' %}
+{% endblock %}
+
+{% block content %}
+    <h4 class="text-center" style="font:bold 22px Impact">Withdraw Amount</h4>
+    <hr>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="alert alert-{{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <br>
+    <div class="col-sm-offset-4 col-sm-8">
+    <form class="form-inline" action="" method="POST" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="acnt_id" value="{{ acnt_id }}">
+        <div class="form-group">
+            <pre class="text-center" style="font-size: large;"><b>Account ID : <span class="text-danger">{{ acnt_id }}</span></b></pre>
+            <br>
+            <input class="form-control" type="text" name="tr_amount" id="tr_amount" placeholder="Withdraw amount">
+            <button type="submit" class="btn btn-primary">Withdraw</button>
+        </div>
+        <br>
+        <br>
+    </form>
+    </div>
+    {% if account %}
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label col-sm-4 text-left" for="cust_id">Customer ID</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="cust_id" name="cust_id" value="{{ account.cust_id }}" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-4 text-left" for="prev_balance">Previous Balance</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="prev_balance" name="prev_balance" value="{{ prev_balance }}" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-4 text-left" for="tr_amount">Amount</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="tr_amount" name="tr_amount" value="₹. {{ tr_amount }}" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-4 text-left" for="acnt_balance">Latest Balance</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="acnt_balance" name="acnt_balance" value="{{ account.acnt_balance }}" readonly>
+            </div>
+        </div>
+        {% endif %}
+        </div>
+    <br>
+{% endblock %}
