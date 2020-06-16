@@ -15,23 +15,23 @@
         {% endif %}
     {% endwith %}
     <div class="col-sm-offset-2 col-sm-10">
-    <form class="form-inline" action="" method="GET" novalidate>
-        <div class="form-group">
-            <input type="text" name="cust_ssn" id="cust_ssn" class="form-control" placeholder="Customer SSN">
-        </div>
-        <div class="form-group">
-            <p class="form-control-static" style="color:red"><b>OR</b></p>
-        </div>
-        <div class="form-group">
-            <input type="text" name="cust_id" id="cust_id" class="form-control" placeholder="Customer ID">
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-info">Search</button>
-        </div>
-    </form>
-    <br>
-    <br>
-</div>
+        <form class="form-inline" action="" method="GET" novalidate>
+            <div class="form-group">
+                <input type="text" name="cust_ssn" id="cust_ssn" class="form-control" placeholder="Customer SSN">
+            </div>
+            <div class="form-group">
+                <p class="form-control-static" style="color:red"><b>OR</b></p>
+            </div>
+            <div class="form-group">
+                <input type="text" name="cust_id" id="cust_id" class="form-control" placeholder="Customer ID">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-info">Search</button>
+            </div>
+        </form>
+        <br>
+        <br>
+    </div>
     {% if customer %}
         <hr>
         <form action="" method="post" class="form-horizontal" novalidate>
@@ -54,7 +54,7 @@
                     <input type="text" class="form-control" id="cust_name" name="cust_name" value="{{ customer.cust_name }}">
                     <span class="alert-danger">
                         {% if errors['cust_name'] %}
-                        <p>{{ errors['cust_name'] }}</p>
+                            <p>{{ errors['cust_name'] }}</p>
                         {% endif %}
                     </span>
                 </div>
@@ -65,7 +65,7 @@
                     <input type="text" class="form-control" id="cust_age" name="cust_age" value="{{ customer.cust_age }}">
                     <span class="alert-danger">
                         {% if errors['cust_age'] %}
-                        <p>{{ errors['cust_age'] }}</p>
+                            <p>{{ errors['cust_age'] }}</p>
                         {% endif %}
                     </span>
                 </div>
@@ -76,7 +76,7 @@
                     <textarea class="form-control" id="cust_addr1" name="cust_addr1">{{ customer.cust_addr1 }}</textarea>
                     <span class="alert-danger">
                         {% if errors['cust_addr1'] %}
-                        <p>{{ errors['cust_addr1'] }}</p>
+                            <p>{{ errors['cust_addr1'] }}</p>
                         {% endif %}
                     </span>
                 </div>
@@ -89,6 +89,6 @@
             </div>
         </form>
     {% endif %}
-<br>
-<br>
+    <br>
+    <br>
 {% endblock %}

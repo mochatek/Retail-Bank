@@ -8,10 +8,16 @@ from flask_login import LoginManager
 app = Flask(__name__)
 app.config.from_object(Config)
 
+# CSRF Protection
 csrf = CSRFProtect(app)
+
+# DB Connection
 db = SQLAlchemy(app)
+
+# ORM Migartion
 migrate = Migrate(app, db)
 
+# Auth-Session middleware
 login  = LoginManager(app)
 login .login_view = 'login'
 

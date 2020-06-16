@@ -7,6 +7,7 @@
 {% block content %}
     <h4 class="text-center" style="font:bold 22px Impact">Account Details</h4>
     <hr>
+
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -14,52 +15,53 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-    <div class="col-sm-offset-2 col-sm-10">
-    <form class="form-inline" action="" method="POST" novalidate>
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div class="form-group">
-            <input type="text" name="cust_id" id="cust_id" class="form-control" placeholder="Customer ID">
-        </div>
-        <div class="form-group">
-            <p class="form-control-static" style="color:red"><b>OR</b></p>
-        </div>
-        <div class="form-group">
-            <input type="text" name="acnt_id" id="acnt_id" class="form-control" placeholder="Account ID">
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-info">Search</button>
-        </div>
-    </form>
-    {% if key == 'cust_id' %}
-        <script>
-            function getAccount(val) {
-                let acnt_id = val;
-                if(acnt_id != '-1') {
-                fetch(`/api/acnt_api?acnt_id=${acnt_id}`)
-                    .then(response => response.text())
-                    .then(html => document.querySelector("#result").innerHTML = html)
-                }
-            }
-        </script>
-        <br>
-        <br>
-        <div class="form-group">
-            <label class="control-label col-sm-3" for="acnt_type">Account Type</label>
-            <div class="col-sm-7">
-                <select class="form-control" id="acnt_type" name="acnt_type" onchange="getAccount(this.value)">
-                    <option value="-1">-- select --</option>
-                    {% for acnt_id,acnt_type in account %}
-                    <option value="{{ acnt_id }}">{{ acnt_type }}</option>
-                    {% endfor %}
-                </select>
+
+    <div class="col-sm-offset-1 col-sm-11">
+        <form class="form-inline" action="" method="POST" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-group">
+                <input type="text" name="cust_id" id="cust_id" class="form-control" placeholder="Customer ID">
             </div>
-        </div>
-        <div class="col-sm-10"  id="result"></div>
-    {% elif key == 'acnt_id' %}
-        <div class="col-sm-10"  id="result">
-            {% include 'includes/acnt_api.html' %}
-        </div>
-    {% endif %}
+            <div class="form-group">
+                <p class="form-control-static" style="color:red"><b>OR</b></p>
+            </div>
+            <div class="form-group">
+                <input type="text" name="acnt_id" id="acnt_id" class="form-control" placeholder="Account ID">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-info">Search</button>
+            </div>
+        </form>
+        {% if key == 'cust_id' %}
+            <script>
+                function getAccount(val) {
+                    let acnt_id = val;
+                    if(acnt_id != '-1') {
+                    fetch(`/api/acnt_api?acnt_id=${acnt_id}`)
+                        .then(response => response.text())
+                        .then(html => document.querySelector("#result").innerHTML = html)
+                    }
+                }
+            </script>
+            <br>
+            <br>
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="acnt_type">Account Type</label>
+                <div class="col-sm-7">
+                    <select class="form-control" id="acnt_type" name="acnt_type" onchange="getAccount(this.value)">
+                        <option value="-1">-- select --</option>
+                        {% for acnt_id,acnt_type in account %}
+                            <option value="{{ acnt_id }}">{{ acnt_type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-10"  id="result"></div>
+        {% elif key == 'acnt_id' %}
+            <div class="col-sm-10"  id="result">
+                {% include 'includes/acnt_api.html' %}
+            </div>
+        {% endif %}
     </div>
     <br>
     <br>

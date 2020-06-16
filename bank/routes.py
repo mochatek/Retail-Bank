@@ -6,7 +6,10 @@ from bank.forms import RegisterForm, LoginForm, AccountForm
 from sqlalchemy import or_, desc
 from flask_login import current_user, login_user, logout_user, login_required
 
+
 @app.route('/')
+@app.route('/index')
+@app.route('/home')
 def index():
     return render_template('index.html', page='index')
 
@@ -14,15 +17,19 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
+        # If already login, redirect to corresponding home page (wrt. role)
         if current_user.is_authenticated:
-            return redirect(url_for('customer_home'))
+            if current_user.role == 'customer':
+                return redirect(url_for('customer_home'))
+            else:
+                return redirect(url_for('teller_home'))
         else:
             return render_template('login.html', page='login')
     else:
         uname = request.form.get('uname')
         password = request.form.get('password')
         role = request.form.get('role')
-        remember_me = bool(request.form.get('remember_me'))
+        remember_me = bool(request.form.get('remember_me')) # Radio
         user = db.session.query(Login).filter(Login.uname==uname, Login.role==role).first()
         if user and user.check_password(password):
             login_user(user, remember=remember_me)
@@ -41,7 +48,7 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = LoginForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit(): # If all fileds pass the validations
         uname = form.uname.data
         password = form.password.data
         role = request.form.get('role')
@@ -53,13 +60,22 @@ def register():
         flash('Registration successfull ! Login to continue.', category='success')
         return redirect(url_for('login'))
     else:
-        return render_template('register.html', page='register', form=form)
+        if current_user.is_authenticated:
+            if current_user.role == 'customer':
+                return redirect(url_for('customer_home'))
+            else:
+                return redirect(url_for('teller_home'))
+        else:
+            return render_template('register.html', page='register', form=form)
 
 
 @app.route('/customer')
 @login_required
 def customer_home():
+    if current_user.role == "teller":
+        return redirect(url_for('error_403')) # Access denied
     return render_template('customer_home.html', page='customer_home')
+
 
 @app.route('/customer/create', methods=['GET', 'POST'])
 @login_required
@@ -73,7 +89,7 @@ def create_customer():
         cust_addr2 = form.cust_addr2.data
         cust_city = form.cust_city.data
         cust_state = form.cust_state.data
-        cust_last_update = datetime.now()           #Timestamp of creation.
+        cust_last_update = datetime.now()
         cust_status = 'Active'
         cust_message = 'Profile Created'
         customer = Customer(cust_ssn=cust_ssn, cust_name=cust_name, cust_age=cust_age, cust_addr1=cust_addr1,
@@ -83,6 +99,8 @@ def create_customer():
         flash('Customer creation initiated successfull !.', category='info')
         return redirect(url_for('customer_home'))
     else:
+        if current_user.role == "teller":
+            return redirect(url_for('error_403'))
         return render_template('create_customer.html', page='create_customer', form=form)
 
 
@@ -115,6 +133,8 @@ def update_customer():
         else:
             flash('You need to fix the errors in order to update', category='danger')
     else:
+        if current_user.role == 'teller':
+            return redirect(url_for('error_403'))
         cust_id = request.args.get('cust_id', -1)
         if cust_id != -1:
             cust_ssn = request.args.get('cust_ssn')
@@ -148,6 +168,8 @@ def delete_customer():
         db.session.commit()
         return redirect(url_for('customer_home'))
     else:
+        if current_user.role == 'teller':
+            return redirect(url_for('error_403'))
         cust_id = request.args.get('cust_id', -1)
         if cust_id != -1:
             cust_ssn = request.args.get('cust_ssn')
@@ -166,6 +188,8 @@ def delete_customer():
 @app.route('/customer/status')
 @login_required
 def customer_status():
+    if current_user.role == 'teller':
+        return redirect(url_for('error_403'))
     customers = db.session.query(Customer).all()
     return render_template('customer_status.html', page='customer_status', customers=customers)
 
@@ -185,7 +209,7 @@ def create_account():
         account = Account(cust_id=cust_id, acnt_type=acnt_type, acnt_balance=deposit_amnt,
                          acnt_last_tr_date=acnt_last_tr_date, acnt_status=acnt_status, acnt_message=acnt_message)
         db.session.add(account)
-        db.session.flush()
+        db.session.flush() # In order to get the primary key ID
         trnsctn = Transaction(tr_amount=deposit_amnt, tr_type="Credit (A/C Opened)", tr_date=acnt_last_tr_date,
                                 tr_src=account.acnt_id, tr_trgt=-1)
         db.session.add(trnsctn)
@@ -193,6 +217,8 @@ def create_account():
         flash('Account creation initiated successfull !.', category='info')
         return redirect(url_for('customer_home'))
     else:
+        if current_user.role == 'teller':
+            return redirect(url_for('error_403'))
         return render_template('create_account.html', page='create_account', form=form, cust_ids=cust_ids)
 
 
@@ -216,6 +242,8 @@ def delete_account():
         db.session.commit()
         return redirect(url_for('customer_home'))
     else:
+        if current_user.role == 'teller':
+            return redirect(url_for('error_403'))
         all_acnt_ids = db.session.query(Account.acnt_id).all()
         acnt_id = request.args.get('acnt_id', '-1')
         if acnt_id != '-1':
@@ -227,15 +255,21 @@ def delete_account():
 
     return render_template('delete_account.html', page='delete_account', acnt_ids=all_acnt_ids, account=account)
 
+
 @app.route('/account/status')
 @login_required
 def account_status():
+    if current_user.role == 'teller':
+        return redirect(url_for('error_403'))
     accounts = db.session.query(Account).all()
     return render_template('account_status.html', page='account_status', accounts=accounts)
+
 
 @app.route('/teller')
 @login_required
 def teller_home():
+    if current_user.role == 'customer':
+        return redirect(url_for('error_403'))
     return render_template('teller_home.html', page='teller_home')
 
 
@@ -261,6 +295,9 @@ def account_details():
                     flash("Customer found. Choose Account to continue.", category='info')
                 else:
                     flash("Sorry, No accounts matching your query", category='danger')
+    else:
+        if current_user.role == 'customer':
+            return redirect(url_for('error_403'))
     return render_template('account_details.html', page='account_details', key=key, account=account)
 
 
@@ -287,6 +324,8 @@ def deposit():
             db.session.commit()
             flash("Amount deposited successfully", category="success")
     else:
+        if current_user.role == 'customer':
+            return redirect(url_for('error_403'))
         acnt_id = request.args.get('acnt_id')
     return render_template('deposit.html', page='account_details', tr_amount=tr_amount, acnt_id=acnt_id, prev_balance=prev_balance, account=account)
 
@@ -317,9 +356,10 @@ def withdraw():
                 db.session.commit()
                 flash("Amount withdrawn successfully", category="success")
     else:
+        if current_user.role == 'customer':
+            return redirect(url_for('error_403'))
         acnt_id = request.args.get('acnt_id')
     return render_template('withdraw.html', page='account_details', tr_amount=tr_amount, acnt_id=acnt_id, prev_balance=prev_balance, account=account)
-
 
 
 @app.route('/teller/transfer', methods=['GET', 'POST'])
@@ -360,7 +400,8 @@ def transfer():
                                     'tr_amount':tr_amount, 'crnt_bal':account_src.acnt_balance}
                 tr_history['trgt'] = {'acnt_id':trgt_acnt, 'prev_bal':account_trgt.acnt_balance-tr_amount,
                                     'tr_amount':tr_amount, 'crnt_bal':account_trgt.acnt_balance}
-
+    if current_user.role == 'customer':
+        return redirect(url_for('error_403'))
     cust_id = request.args.get('cust_id')
     src_account = db.session.query(Account.acnt_id, Account.acnt_type).filter(Account.cust_id == cust_id).all()
     src_acnt_ids = [acnt[0] for acnt in src_account]
@@ -368,10 +409,11 @@ def transfer():
     return render_template('transfer.html', page='account_details', cust_id=cust_id, src_account=src_account, trgt_account=trgt_account, tr_history=tr_history)
 
 
-
 @app.route('/teller/statement')
 @login_required
 def statement():
+    if current_user.role == 'customer':
+        return redirect(url_for('error_403'))
     trnsctn = None
     acnt_ids = db.session.query(Account.acnt_id).all()
     no_of_tr = request.args.get('no_of_tr', -1)
@@ -396,14 +438,29 @@ def statement():
     return render_template('statement.html', page='statement', acnt_ids=acnt_ids, trnsctn=trnsctn)
 
 
+# Ajax target.
 @app.route('/api/acnt_api')
+@login_required
 def acnt_api():
-        acnt_id = int(request.args.get('acnt_id'))
-        account = db.session.query(Account).filter(Account.acnt_id == acnt_id).first()
-        return render_template('includes/acnt_api.html', account=account)
+    acnt_id = int(request.args.get('acnt_id'))
+    account = db.session.query(Account).filter(Account.acnt_id == acnt_id).first()
+    return render_template('includes/acnt_api.html', account=account)
+
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+# teller can't view Executive's pages & vice versa
+@app.route('/error_403')
+def error_403():
+    return render_template('403.html')
+
+
+# Custom 404 page
+@app.errorhandler(404)
+def error_404(error):
+    return render_template('404.html'), 404

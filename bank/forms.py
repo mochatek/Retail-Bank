@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Length
 from wtforms import ValidationError
-from bank.models import Login, db, Customer
+from bank.models import Login, db
 
 def only_number(form, field):
         if not field.data.isnumeric():
@@ -27,8 +27,6 @@ class RegisterForm(FlaskForm):
     cust_addr2 = TextAreaField('Address lane 2',)
     cust_city = StringField('City', validators=[DataRequired(message='Mandatory')])
     cust_state = StringField('State', validators=[DataRequired(message='Mandatory')])
-    # uname = StringField('Username', validators=[DataRequired(message='Mandatory'), must_be_unique])
-    # password = PasswordField('Password', validators=[DataRequired(message='Mandatory'), Length(min=6, message='Minimum 6 characters needed')])
     submit = SubmitField('Register')
 
 
@@ -37,11 +35,6 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(message='Mandatory'), Length(min=6, message='Minimum 6 characters needed')])
 
 class AccountForm(FlaskForm):
-    # CUST_IDS = []
-    # customers = db.session.query(Customer).all()
-    # for customer in customers:
-    #     CUST_IDS.append((str(customer.cust_id), customer.cust_id))
-    # cust_id = SelectField('Customer ID', choices=CUST_IDS)
     acnt_type = SelectField('Account Type', choices=[('Current','current'), ('Savings', 'savings')])
     deposit_amnt = StringField('Deposit Amount', validators=[DataRequired(message='Mandatory'), valid_amount])
     submit = SubmitField('Submit')

@@ -16,18 +16,18 @@
     {% endwith %}
     <br>
     <div class="col-sm-offset-4 col-sm-8">
-    <form class="form-inline" action="" method="POST" novalidate>
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="hidden" name="acnt_id" value="{{ acnt_id }}">
-        <div class="form-group">
-            <pre class="text-center" style="font-size: large;"><b>Account ID : <span class="text-danger">{{ acnt_id }}</span></b></pre>
+        <form class="form-inline" action="" method="POST" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="acnt_id" value="{{ acnt_id }}">
+            <div class="form-group">
+                <pre class="text-center" style="font-size: large;"><b>Account ID : <span class="text-danger">{{ acnt_id }}</span></b></pre>
+                <br>
+                <input class="form-control" type="text" name="tr_amount" id="tr_amount" placeholder="Deposit amount">
+                <button type="submit" class="btn btn-success">Deposit</button>
+            </div>
             <br>
-            <input class="form-control" type="text" name="tr_amount" id="tr_amount" placeholder="Deposit amount">
-            <button type="submit" class="btn btn-success">Deposit</button>
-        </div>
-        <br>
-        <br>
-    </form>
+            <br>
+        </form>
     </div>
     {% if account %}
     <div class="form-horizontal">
@@ -56,6 +56,6 @@
             </div>
         </div>
         {% endif %}
-        </div>
+    </div>
     <br>
 {% endblock %}

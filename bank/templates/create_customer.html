@@ -16,7 +16,7 @@
                     {{ field(class_="form-control") }}
                     <span class="alert-danger">
                         {% for error in field.errors %}
-                        <p>{{ error }}</p>
+                            <p>{{ error }}</p>
                         {% endfor %}
                     </span>
                 </div>
@@ -26,7 +26,6 @@
             <div class="col-sm-offset-2 col-sm-10">
                 {{ form.submit(class_="btn btn-primary") }}
                 <span style="margin-left: 5%;">Already have an account? Login <a href="{{ url_for('login') }}"><b>Here</b></a></span>
-
             </div>
         </div>
     </form>

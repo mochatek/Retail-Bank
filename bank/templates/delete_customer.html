@@ -15,23 +15,23 @@
         {% endif %}
     {% endwith %}
     <div class="col-sm-offset-2 col-sm-10">
-    <form class="form-inline" action="" method="GET" novalidate>
-        <div class="form-group">
-            <input type="text" name="cust_ssn" id="cust_ssn" class="form-control" placeholder="Customer SSN">
-        </div>
-        <div class="form-group">
-            <p class="form-control-static" style="color:red"><b>OR</b></p>
-        </div>
-        <div class="form-group">
-            <input type="text" name="cust_id" id="cust_id" class="form-control" placeholder="Customer ID">
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-info">Search</button>
-        </div>
-    </form>
-    <br>
-    <br>
-</div>
+        <form class="form-inline" action="" method="GET" novalidate>
+            <div class="form-group">
+                <input type="text" name="cust_ssn" id="cust_ssn" class="form-control" placeholder="Customer SSN">
+            </div>
+            <div class="form-group">
+                <p class="form-control-static" style="color:red"><b>OR</b></p>
+            </div>
+            <div class="form-group">
+                <input type="text" name="cust_id" id="cust_id" class="form-control" placeholder="Customer ID">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-info">Search</button>
+            </div>
+        </form>
+        <br>
+        <br>
+    </div>
     {% if customer %}
         <hr>
         <form action="" method="post" class="form-horizontal" novalidate>
@@ -65,13 +65,13 @@
                     {% if customer.cust_status != "Deleted" %}
                         <button type="submit" class="btn btn-danger">Delete</button>
                     {% else %}
-                    <button type="submit" class="btn btn-success">Reactivate</button>
+                        <button type="submit" class="btn btn-success">Reactivate</button>
                     {% endif %}
-                    <span style='margin-left: 5%;'>You can Update this customer <a class="text-info text-bold" href="{{ url_for('update_customer', cust_ssn=customer.cust_ssn, cust_id=customer.cust_id) }}"><b>Here</b></a></span>
+                        <span style='margin-left: 5%;'>You can Update this customer <a class="text-info text-bold" href="{{ url_for('update_customer', cust_ssn=customer.cust_ssn, cust_id=customer.cust_id) }}"><b>Here</b></a></span>
                 </div>
             </div>
         </form>
     {% endif %}
-<br>
-<br>
+    <br>
+    <br>
 {% endblock %}

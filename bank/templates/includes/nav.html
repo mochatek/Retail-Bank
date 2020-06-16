@@ -2,8 +2,12 @@
     <div class="container-fluid">
         <ul class="nav navbar-nav">
             <li class="{% if page=='index' %}active{% endif %}"><a href="{{ url_for('index') }}"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+            {% if not current_user.is_authenticated %}
             <li class="{% if page=='register' %}active{% endif %}"><a href="{{ url_for('register') }}"><span class="glyphicon glyphicon-user"></span> Register</a></li>
             <li class="{% if page=='login' %}active{% endif %}"><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+            {% else %}
+            <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+            {% endif %}
         </ul>
     </div>
 </nav>
