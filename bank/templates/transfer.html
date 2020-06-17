@@ -15,7 +15,7 @@
         {% endif %}
     {% endwith %}
     <br>
-    <div class="col-sm-offset-2 col-sm-10">
+    <div class="col-sm-12">
         <form action="" method="post" class="form-horizontal" novalidate>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="cust_id" value="{{ cust_id }}">
@@ -63,7 +63,7 @@
     <br>
     {% if tr_history %}
         <div class="container-fluid">
-            <div class="col-sm-12" style="margin:3%">
+            <div class="col-sm-12" style="margin-top:3%;margin-bottom;:3%">
                 <h4 class="alert alert-success" style="text-align: center;font-family: Impact;">Transfer History</h4>
             </div>
             {% for acnt in tr_history %}

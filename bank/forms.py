@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, TextAreaField, SelectField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Regexp
 from wtforms import ValidationError
 from bank.models import Login, db
 
@@ -31,8 +31,8 @@ class RegisterForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    uname = StringField('Username', validators=[DataRequired(message='Mandatory'), Length(min=6, message='Minimum 6 characters needed'), must_be_unique])
-    password = PasswordField('Password', validators=[DataRequired(message='Mandatory'), Length(min=6, message='Minimum 6 characters needed')])
+    uname = StringField('Username', validators=[DataRequired(message='Mandatory'), Length(min=8, message='Minimum 8 characters needed'), Regexp('^\w+$', message="Must be Alphanumeric"), must_be_unique])
+    password = PasswordField('Password', validators=[DataRequired(message='Mandatory'), Length(min=10, message='Minimum 10 characters needed'), Regexp('^(?=\S{10,20}$)(?=.*?\d)(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[^A-Za-z\s0-9])', message="Must contain atleast 1 number, uppercase letter and special character")])
 
 class AccountForm(FlaskForm):
     acnt_type = SelectField('Account Type', choices=[('Current','current'), ('Savings', 'savings')])

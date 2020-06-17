@@ -415,6 +415,7 @@ def statement():
     if current_user.role == 'customer':
         return redirect(url_for('error_403'))
     trnsctn = None
+    resultMsg = None
     acnt_ids = db.session.query(Account.acnt_id).all()
     no_of_tr = request.args.get('no_of_tr', -1)
     if no_of_tr != -1:
@@ -425,17 +426,19 @@ def statement():
             trnsctn = db.session.query(Transaction).filter(or_(Transaction.tr_src == acnt_id, Transaction.tr_trgt == acnt_id)).order_by(desc(Transaction.tr_id)).limit(no_of_tr).all()
             if trnsctn:
                 flash("Account statement generated for Account ID : {}".format(acnt_id), category="success")
+                resultMsg = "Last {} Transactions for Account ID : {}".format(no_of_tr, acnt_id)
             else:
                 flash("No transactions matching your query", category="info")
         elif dt_from.strip() != '' and dt_to.strip() != '':
             trnsctn = db.session.query(Transaction).filter(or_(Transaction.tr_src == acnt_id, Transaction.tr_trgt == acnt_id), Transaction.tr_date.between(dt_from, dt_to)).all()
             if trnsctn:
                 flash("Account statement generated for Account ID : {}".format(acnt_id), category="success")
+                resultMsg = "Transactions between ({}) and ({}) for Account ID : {}".format(dt_from, dt_to, acnt_id)
             else:
                 flash("No transactions matching your query", category="info")
         else:
             flash("Either one is mandatory", category="danger")
-    return render_template('statement.html', page='statement', acnt_ids=acnt_ids, trnsctn=trnsctn)
+    return render_template('statement.html', page='statement', acnt_ids=acnt_ids, trnsctn=trnsctn, resultMsg=resultMsg)
 
 
 # Ajax target.
